@@ -278,10 +278,35 @@ def confirm_subscription():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-@app.route("/write_breakfast_expense", methods=["POST"])
-def write_breakfast_expense():
-    """Write 'Breakfast 10000' in the available text field"""
+@app.route("/write_transaction_command", methods=["POST"])
+def write_transaction_command():
+    """Write transaction command in the available text field"""
     try:
+        data = request.get_json() or {}
+        command = data.get("command", "")
+
+        if not command or not isinstance(command, str):
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Invalid or missing 'command' parameter. Must be a non-empty string.",
+                    }
+                ),
+                400,
+            )
+
+        if len(command) > 200:
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Command too long. Maximum 200 characters allowed.",
+                    }
+                ),
+                400,
+            )
+
         text_field = None
 
         if d(className="android.widget.EditText").exists:
@@ -301,13 +326,14 @@ def write_breakfast_expense():
         if text_field and text_field.exists:
             text_field.clear_text()
             time.sleep(0.5)
-            text_field.set_text("Breakfast 10000")
+            text_field.set_text(command)
             time.sleep(1)
 
             return jsonify(
                 {
                     "status": "success",
-                    "message": "Successfully wrote 'Breakfast 10000' in text field",
+                    "message": f"Successfully wrote '{command}' in text field",
+                    "command": command,
                 }
             )
         else:
