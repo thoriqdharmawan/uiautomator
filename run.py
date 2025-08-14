@@ -287,12 +287,82 @@ def write_breakfast_expense():
             text_field.set_text("Breakfast 10000")
             time.sleep(1)
 
-            return jsonify(
-                {
-                    "status": "success",
-                    "message": "Successfully wrote 'Breakfast 10000' in text field",
-                }
-            )
+            submit_button = None
+
+            text_field_bounds = text_field.info.get("bounds", {})
+            text_field_right = text_field_bounds.get("right", 0)
+            text_field_top = text_field_bounds.get("top", 0)
+            text_field_bottom = text_field_bounds.get("bottom", 0)
+            text_field_center_y = (text_field_top + text_field_bottom) // 2
+
+            if d(className="android.view.ViewGroup").exists:
+                # Look for ViewGroup (Pressable/TouchableOpacity) near the text field
+                viewgroups = d(className="android.view.ViewGroup")
+                for vg in viewgroups:
+                    vg_bounds = vg.info.get("bounds", {})
+                    vg_left = vg_bounds.get("left", 0)
+                    vg_top = vg_bounds.get("top", 0)
+                    vg_bottom = vg_bounds.get("bottom", 0)
+                    vg_center_y = (vg_top + vg_bottom) // 2
+
+                    if (
+                        vg_left >= text_field_right - 50
+                        and abs(vg_center_y - text_field_center_y) < 50
+                    ):
+                        submit_button = vg
+                        break
+
+            # Fallback: try other button types
+            if not submit_button:
+                if d(className="android.widget.ImageButton").exists:
+                    submit_button = d(className="android.widget.ImageButton")
+                elif d(className="android.widget.ImageView").exists:
+                    imageviews = d(className="android.widget.ImageView")
+                    for iv in imageviews:
+                        iv_bounds = iv.info.get("bounds", {})
+                        iv_left = iv_bounds.get("left", 0)
+                        iv_top = iv_bounds.get("top", 0)
+                        iv_bottom = iv_bounds.get("bottom", 0)
+                        iv_center_y = (iv_top + iv_bottom) // 2
+
+                        # Check if ImageView is to the right of text field
+                        if (
+                            iv_left >= text_field_right - 50
+                            and abs(iv_center_y - text_field_center_y) < 50
+                        ):
+                            submit_button = iv
+                            break
+                elif d(className="android.widget.Button").exists:
+                    submit_button = d(className="android.widget.Button")
+
+            if not submit_button:
+                click_x = text_field_right + 30  # 30px to the right
+                click_y = text_field_center_y
+                d.click(click_x, click_y)
+                time.sleep(1)
+                return jsonify(
+                    {
+                        "status": "success",
+                        "message": "Successfully wrote 'Breakfast 10000' and clicked estimated submit button position",
+                    }
+                )
+
+            if submit_button and submit_button.exists:
+                submit_button.click()
+                time.sleep(1)
+                return jsonify(
+                    {
+                        "status": "success",
+                        "message": "Successfully wrote 'Breakfast 10000' and clicked submit button",
+                    }
+                )
+            else:
+                return jsonify(
+                    {
+                        "status": "partial_success",
+                        "message": "Successfully wrote 'Breakfast 10000' but submit button not found",
+                    }
+                )
         else:
             return jsonify(
                 {
