@@ -58,6 +58,78 @@ def open_shopee():
 
 @app.route("/open_atur_uang", methods=["POST"])
 def open_atur_uang():
+    """Only opens the Atur Uang app"""
+    try:
+        subprocess.run(
+            ["am", "start", "-n", "com.aturuang/.MainActivity"],
+            check=True,
+        )
+        time.sleep(5)
+        return jsonify({"status": "success", "message": "Atur Uang app opened"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/wait_for_login", methods=["POST"])
+def wait_for_login():
+    """Waits for user to complete login in Atur Uang app"""
+    try:
+        while not d(text="Masuk").exists:
+            time.sleep(1)
+
+        login_attempts = 0
+        max_wait_time = 300
+
+        while d(text="Masuk").exists and login_attempts < max_wait_time:
+            time.sleep(1)
+            login_attempts += 1
+
+        if login_attempts >= max_wait_time:
+            return jsonify(
+                {
+                    "status": "timeout",
+                    "message": "Login timeout - user took too long to login",
+                }
+            )
+
+        time.sleep(3)
+        return jsonify({"status": "success", "message": "User successfully logged in"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/click_ai_chatbot", methods=["POST"])
+def click_ai_chatbot():
+    """Finds and clicks the AI Chatbot button"""
+    try:
+        chatbot_wait_attempts = 0
+        max_chatbot_wait = 60
+
+        while (
+            not d(text="AI Chatbot").exists and chatbot_wait_attempts < max_chatbot_wait
+        ):
+            time.sleep(1)
+            chatbot_wait_attempts += 1
+
+        if d(text="AI Chatbot").exists:
+            d(text="AI Chatbot").click()
+            return jsonify(
+                {"status": "success", "message": "AI Chatbot clicked successfully"}
+            )
+        else:
+            return jsonify(
+                {
+                    "status": "timeout",
+                    "message": "AI Chatbot button not found after waiting",
+                }
+            )
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/full_atur_uang_flow", methods=["POST"])
+def full_atur_uang_flow():
+    """Complete flow: opens app, waits for login, and clicks AI Chatbot"""
     try:
         subprocess.run(
             ["am", "start", "-n", "com.aturuang/.MainActivity"],
@@ -75,6 +147,14 @@ def open_atur_uang():
             time.sleep(1)
             login_attempts += 1
 
+        if login_attempts >= max_wait_time:
+            return jsonify(
+                {
+                    "status": "timeout",
+                    "message": "Login timeout - user took too long to login",
+                }
+            )
+
         time.sleep(3)
 
         chatbot_wait_attempts = 0
@@ -91,7 +171,7 @@ def open_atur_uang():
             return jsonify(
                 {
                     "status": "success",
-                    "message": "Atur Uang opened, user logged in, and AI Chatbot clicked",
+                    "message": "Complete flow: Atur Uang opened, user logged in, and AI Chatbot clicked",
                 }
             )
         else:
@@ -102,6 +182,8 @@ def open_atur_uang():
                 }
             )
     except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
