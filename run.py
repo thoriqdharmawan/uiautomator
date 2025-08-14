@@ -186,7 +186,26 @@ def click_mulai_berlangganan():
 
             if d(text="Langganan").exists:
                 d(text="Langganan").click()
-                time.sleep(2)
+                time.sleep(5)
+
+                if d(text="Berhasil Berlangganan").exists:
+                    time.sleep(1)
+                    d.press.back()
+                    time.sleep(1)
+
+                    return jsonify(
+                        {
+                            "status": "success",
+                            "message": "Successfully clicked 'Mulai Berlangganan' and 'Langganan' buttons",
+                        }
+                    )
+                else:
+                    return jsonify(
+                        {
+                            "status": "error",
+                            "message": "Failed to subscribe - 'Berhasil Berlangganan' text not found",
+                        }
+                    )
 
             else:
                 return jsonify(
