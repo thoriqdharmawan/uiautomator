@@ -58,45 +58,51 @@ def open_shopee():
 
 @app.route("/open_atur_uang", methods=["POST"])
 def open_atur_uang():
-    d.screen.on()
-
-    d(text="Atur Uang").click()
-    time.sleep(5)
-
-    while not d(text="Masuk").exists:
-        time.sleep(1)
-
-    login_attempts = 0
-    max_wait_time = 300
-
-    while d(text="Masuk").exists and login_attempts < max_wait_time:
-        time.sleep(1)
-        login_attempts += 1
-
-    time.sleep(3)
-
-    chatbot_wait_attempts = 0
-    max_chatbot_wait = 60
-
-    while not d(text="AI Chatbot").exists and chatbot_wait_attempts < max_chatbot_wait:
-        time.sleep(1)
-        chatbot_wait_attempts += 1
-
-    if d(text="AI Chatbot").exists:
-        d(text="AI Chatbot").click()
-        return jsonify(
-            {
-                "status": "success",
-                "message": "Atur Uang opened, user logged in, and AI Chatbot clicked",
-            }
+    try:
+        subprocess.run(
+            ["am", "start", "-n", "com.aturuang/.MainActivity"],
+            check=True,
         )
-    else:
-        return jsonify(
-            {
-                "status": "timeout",
-                "message": "AI Chatbot not found after waiting for user login",
-            }
-        )
+        time.sleep(5)
+
+        while not d(text="Masuk").exists:
+            time.sleep(1)
+
+        login_attempts = 0
+        max_wait_time = 300
+
+        while d(text="Masuk").exists and login_attempts < max_wait_time:
+            time.sleep(1)
+            login_attempts += 1
+
+        time.sleep(3)
+
+        chatbot_wait_attempts = 0
+        max_chatbot_wait = 60
+
+        while (
+            not d(text="AI Chatbot").exists and chatbot_wait_attempts < max_chatbot_wait
+        ):
+            time.sleep(1)
+            chatbot_wait_attempts += 1
+
+        if d(text="AI Chatbot").exists:
+            d(text="AI Chatbot").click()
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": "Atur Uang opened, user logged in, and AI Chatbot clicked",
+                }
+            )
+        else:
+            return jsonify(
+                {
+                    "status": "timeout",
+                    "message": "AI Chatbot not found after waiting for user login",
+                }
+            )
+    except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/health", methods=["GET"])
