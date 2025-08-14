@@ -72,7 +72,6 @@ def open_atur_uang():
                     "status": "success",
                     "logged_in": False,
                     "message": "User is not logged in - Login text found",
-                    "isLoggedIn": False,
                 }
             )
         else:
@@ -81,7 +80,6 @@ def open_atur_uang():
                     "status": "success",
                     "logged_in": True,
                     "message": "User is already logged in - No Login text found",
-                    "isLoggedIn": True,
                 }
             )
     except subprocess.CalledProcessError as e:
