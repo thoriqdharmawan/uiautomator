@@ -74,13 +74,13 @@ def open_atur_uang():
 def wait_for_login():
     """Waits for user to complete login in Atur Uang app"""
     try:
-        while not d(text="Masuk").exists:
+        while not d(text="Login").exists:
             time.sleep(1)
 
         login_attempts = 0
         max_wait_time = 300
 
-        while d(text="Masuk").exists and login_attempts < max_wait_time:
+        while d(text="Login").exists and login_attempts < max_wait_time:
             time.sleep(1)
             login_attempts += 1
 
@@ -137,13 +137,13 @@ def full_atur_uang_flow():
         )
         time.sleep(5)
 
-        while not d(text="Masuk").exists:
+        while not d(text="Login").exists:
             time.sleep(1)
 
         login_attempts = 0
         max_wait_time = 300
 
-        while d(text="Masuk").exists and login_attempts < max_wait_time:
+        while d(text="Login").exists and login_attempts < max_wait_time:
             time.sleep(1)
             login_attempts += 1
 
