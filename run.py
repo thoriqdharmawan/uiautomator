@@ -32,7 +32,7 @@ d = Device()
 
 
 @app.route("/open_shopee_v2", methods=["POST"])
-def open_shopee():
+def open_shopee_v2():
     d.screen.on()
     d.press.home()
     time.sleep(1)
