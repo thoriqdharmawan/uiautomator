@@ -247,6 +247,50 @@ def check_premium_status():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@app.route("/write_breakfast_expense", methods=["POST"])
+def write_breakfast_expense():
+    """Write 'Breakfast 10000' in the available text field"""
+    try:
+        text_field = None
+
+        if d(className="android.widget.EditText").exists:
+            text_field = d(className="android.widget.EditText")
+        elif d(resourceId="com.aturuang:id/editText").exists:
+            text_field = d(resourceId="com.aturuang:id/editText")
+        elif d(resourceId="com.aturuang:id/et_expense").exists:
+            text_field = d(resourceId="com.aturuang:id/et_expense")
+        elif d(resourceId="com.aturuang:id/input").exists:
+            text_field = d(resourceId="com.aturuang:id/input")
+        elif (
+            d(text="").exists
+            and d(text="").info.get("className") == "android.widget.EditText"
+        ):
+            text_field = d(text="")
+
+        if text_field and text_field.exists:
+            text_field.clear_text()
+            time.sleep(0.5)
+            text_field.set_text("Breakfast 10000")
+            time.sleep(1)
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": "Successfully wrote 'Breakfast 10000' in text field",
+                }
+            )
+        else:
+            return jsonify(
+                {
+                    "status": "not_found",
+                    "message": "No text field found on current screen",
+                }
+            )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok - v1"})
