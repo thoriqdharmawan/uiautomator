@@ -143,6 +143,7 @@ def click_ai_chatbot():
 
         if d(text="AI Chatbot").exists:
             d(text="AI Chatbot").click()
+            time.sleep(1)
 
             wait_attempts = 0
             max_wait = 30
