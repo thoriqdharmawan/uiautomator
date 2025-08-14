@@ -130,6 +130,8 @@ def click_ai_chatbot():
         if d(text="AI Chatbot").exists:
             d(text="AI Chatbot").click()
 
+            time.sleep(3)
+
             if d(text="Keanggotaan Premium").exists:
                 return jsonify(
                     {
