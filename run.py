@@ -453,6 +453,51 @@ def click_submit_button():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@app.route("/go_to_calendar", methods=["POST"])
+def go_to_calendar():
+    """Navigate to transaction calendar by clicking 'Kalender' text"""
+    try:
+        calendar_wait_attempts = 0
+        max_calendar_wait = 30
+
+        while (
+            not d(text="Kalender").exists and calendar_wait_attempts < max_calendar_wait
+        ):
+            time.sleep(1)
+            calendar_wait_attempts += 1
+
+        if d(text="Kalender").exists:
+            d(text="Kalender").click()
+            time.sleep(2)
+
+            verification_wait = 0
+            max_verification_wait = 10
+
+            while calendar_wait_attempts < max_verification_wait:
+                time.sleep(1)
+                verification_wait += 1
+                break
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": "Successfully navigated to calendar - clicked 'Kalender' button",
+                    "wait_time": calendar_wait_attempts,
+                }
+            )
+        else:
+            return jsonify(
+                {
+                    "status": "timeout",
+                    "message": f"'Kalender' text not found after waiting {max_calendar_wait} seconds",
+                    "wait_time": calendar_wait_attempts,
+                }
+            )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 @app.route("/go_back", methods=["POST"])
 def go_back():
     """Navigate back with dynamic number of back presses"""
