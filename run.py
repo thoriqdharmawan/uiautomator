@@ -387,12 +387,59 @@ def click_submit_button():
             click_y = text_field_center_y
             d.click(click_x, click_y)
             time.sleep(1)
+            d.press.back()
+            d.press.back()
             return jsonify(
                 {
                     "status": "success",
                     "message": "Successfully clicked estimated submit button position",
                 }
             )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/go_back", methods=["POST"])
+def go_back():
+    """Navigate back with dynamic number of back presses"""
+    try:
+        data = request.get_json() or {}
+        back_count = data.get("count", 1)
+
+        if not isinstance(back_count, int) or back_count < 1:
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Invalid count parameter. Must be a positive integer.",
+                    }
+                ),
+                400,
+            )
+
+        if back_count > 10:
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Maximum 10 back presses allowed for safety.",
+                    }
+                ),
+                400,
+            )
+
+        for i in range(back_count):
+            d.press.back()
+            time.sleep(0.5)
+
+        return jsonify(
+            {
+                "status": "success",
+                "message": f"Successfully pressed back button {back_count} time(s)",
+                "back_count": back_count,
+            }
+        )
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
