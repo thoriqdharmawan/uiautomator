@@ -65,7 +65,25 @@ def open_atur_uang():
             check=True,
         )
         time.sleep(5)
-        return jsonify({"status": "success", "message": "Atur Uang app opened"})
+
+        if d(text="Login").exists:
+            return jsonify(
+                {
+                    "status": "success",
+                    "logged_in": False,
+                    "message": "User is not logged in - Login text found",
+                    "isLoggedIn": False,
+                }
+            )
+        else:
+            return jsonify(
+                {
+                    "status": "success",
+                    "logged_in": True,
+                    "message": "User is already logged in - No Login text found",
+                    "isLoggedIn": True,
+                }
+            )
     except subprocess.CalledProcessError as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -123,66 +141,6 @@ def click_ai_chatbot():
                     "message": "AI Chatbot button not found after waiting",
                 }
             )
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@app.route("/full_atur_uang_flow", methods=["POST"])
-def full_atur_uang_flow():
-    """Complete flow: opens app, waits for login, and clicks AI Chatbot"""
-    try:
-        subprocess.run(
-            ["am", "start", "-n", "com.aturuang/.MainActivity"],
-            check=True,
-        )
-        time.sleep(5)
-
-        while not d(text="Login").exists:
-            time.sleep(1)
-
-        login_attempts = 0
-        max_wait_time = 300
-
-        while d(text="Login").exists and login_attempts < max_wait_time:
-            time.sleep(1)
-            login_attempts += 1
-
-        if login_attempts >= max_wait_time:
-            return jsonify(
-                {
-                    "status": "timeout",
-                    "message": "Login timeout - user took too long to login",
-                }
-            )
-
-        time.sleep(3)
-
-        chatbot_wait_attempts = 0
-        max_chatbot_wait = 60
-
-        while (
-            not d(text="AI Chatbot").exists and chatbot_wait_attempts < max_chatbot_wait
-        ):
-            time.sleep(1)
-            chatbot_wait_attempts += 1
-
-        if d(text="AI Chatbot").exists:
-            d(text="AI Chatbot").click()
-            return jsonify(
-                {
-                    "status": "success",
-                    "message": "Complete flow: Atur Uang opened, user logged in, and AI Chatbot clicked",
-                }
-            )
-        else:
-            return jsonify(
-                {
-                    "status": "timeout",
-                    "message": "AI Chatbot not found after waiting for user login",
-                }
-            )
-    except subprocess.CalledProcessError as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
