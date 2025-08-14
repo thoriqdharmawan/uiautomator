@@ -144,7 +144,22 @@ def click_ai_chatbot():
         if d(text="AI Chatbot").exists:
             d(text="AI Chatbot").click()
 
-            time.sleep(3)
+            wait_attempts = 0
+            max_wait = 30
+
+            while d(text="AI Chatbot").exists and wait_attempts < max_wait:
+                time.sleep(1)
+                wait_attempts += 1
+
+            if wait_attempts >= max_wait:
+                return jsonify(
+                    {
+                        "status": "timeout",
+                        "message": "AI Chatbot text still visible after clicking - page may not have loaded",
+                    }
+                )
+
+            time.sleep(2)
 
             premium_status = check_premium_membership()
 
