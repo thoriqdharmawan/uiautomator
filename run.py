@@ -9,6 +9,20 @@ app = Flask(__name__)
 d = Device()
 
 
+def check_premium_membership():
+    """Check if user is a premium member by looking for 'Keanggotaan Premium' text"""
+    if d(text="Keanggotaan Premium").exists:
+        return {
+            "is_premium_member": False,
+            "message": "User is not a premium member - Keanggotaan Premium text found",
+        }
+    else:
+        return {
+            "is_premium_member": True,
+            "message": "User is a premium member - Keanggotaan Premium text not found",
+        }
+
+
 # @app.route("/trigger_n8n", methods=["POST"])
 # def trigger_n8n():
 #     n8n_webhook_url = "https://n8n.aturuang.xyz/webhook-test/open_shopee"
@@ -132,22 +146,9 @@ def click_ai_chatbot():
 
             time.sleep(3)
 
-            if d(text="Keanggotaan Premium").exists:
-                return jsonify(
-                    {
-                        "status": "success",
-                        "is_premium_member": False,
-                        "message": "User is not a premium member - Keanggotaan Premium text found",
-                    }
-                )
-            else:
-                return jsonify(
-                    {
-                        "status": "success",
-                        "is_premium_member": True,
-                        "message": "User is a premium member - Keanggotaan Premium text not found",
-                    }
-                )
+            premium_status = check_premium_membership()
+
+            return jsonify({"status": "success", **premium_status})
         else:
             return jsonify(
                 {
@@ -155,6 +156,16 @@ def click_ai_chatbot():
                     "message": "AI Chatbot button not found after waiting",
                 }
             )
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/check_premium_status", methods=["GET"])
+def check_premium_status():
+    """Check if user is a premium member"""
+    try:
+        premium_status = check_premium_membership()
+        return jsonify({"status": "success", **premium_status})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
