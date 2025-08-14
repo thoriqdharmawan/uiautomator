@@ -43,17 +43,17 @@ d = Device()
 #     return jsonify({"status": "Shopee app opened"})
 
 
-# @app.route("/open_shopee", methods=["GET"])
-# def open_shopee():
-#     try:
-#         subprocess.run(
-#             ["am", "start", "-n", "com.shopee.id/com.shopee.app.ui.home.HomeActivity_"],
-#             check=True,
-#         )
+@app.route("/open_shopee", methods=["GET"])
+def open_shopee():
+    try:
+        subprocess.run(
+            ["am", "start", "-n", "com.shopee.id/com.shopee.app.ui.home.HomeActivity_"],
+            check=True,
+        )
 
-#         return jsonify({"status": "success", "message": "Shopee dibuka"})
-#     except subprocess.CalledProcessError as e:
-#         return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "success", "message": "Shopee dibuka"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/open_atur_uang", methods=["POST"])
