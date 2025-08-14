@@ -23,6 +23,32 @@ def check_premium_membership():
         }
 
 
+def go_back_function(count=1):
+    """Reusable function to navigate back with dynamic number of back presses"""
+    try:
+        if not isinstance(count, int) or count < 1:
+            raise ValueError("Invalid count parameter. Must be a positive integer.")
+
+        if count > 10:
+            raise ValueError("Maximum 10 back presses allowed for safety.")
+
+        for i in range(count):
+            d.press.back()
+            time.sleep(0.5)
+
+        return {
+            "success": True,
+            "message": f"Successfully pressed back button {count} time(s)",
+            "back_count": count,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": str(e),
+        }
+
+
 # @app.route("/trigger_n8n", methods=["POST"])
 # def trigger_n8n():
 #     n8n_webhook_url = "https://n8n.aturuang.xyz/webhook-test/open_shopee"
@@ -387,14 +413,24 @@ def click_submit_button():
             click_y = text_field_center_y
             d.click(click_x, click_y)
             time.sleep(1)
-            d.press.back()
-            d.press.back()
-            return jsonify(
-                {
-                    "status": "success",
-                    "message": "Successfully clicked estimated submit button position",
-                }
-            )
+
+            back_result = go_back_function(2)
+            if back_result["success"]:
+                return jsonify(
+                    {
+                        "status": "success",
+                        "message": "Successfully clicked estimated submit button position and navigated back",
+                        "back_info": back_result["message"],
+                    }
+                )
+            else:
+                return jsonify(
+                    {
+                        "status": "partial_success",
+                        "message": "Successfully clicked estimated submit button position but failed to navigate back",
+                        "back_error": back_result["message"],
+                    }
+                )
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -407,39 +443,26 @@ def go_back():
         data = request.get_json() or {}
         back_count = data.get("count", 1)
 
-        if not isinstance(back_count, int) or back_count < 1:
+        result = go_back_function(back_count)
+
+        if result["success"]:
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": result["message"],
+                    "back_count": result["back_count"],
+                }
+            )
+        else:
             return (
                 jsonify(
                     {
                         "status": "error",
-                        "message": "Invalid count parameter. Must be a positive integer.",
+                        "message": result["message"],
                     }
                 ),
                 400,
             )
-
-        if back_count > 10:
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "Maximum 10 back presses allowed for safety.",
-                    }
-                ),
-                400,
-            )
-
-        for i in range(back_count):
-            d.press.back()
-            time.sleep(0.5)
-
-        return jsonify(
-            {
-                "status": "success",
-                "message": f"Successfully pressed back button {back_count} time(s)",
-                "back_count": back_count,
-            }
-        )
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
