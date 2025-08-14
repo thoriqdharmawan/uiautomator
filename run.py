@@ -23,6 +23,20 @@ def check_premium_membership():
         }
 
 
+def check_login_status():
+    """Check if user is logged in by looking for 'Login' text"""
+    if d(text="Login").exists:
+        return {
+            "logged_in": False,
+            "message": "User is not logged in - Login text found",
+        }
+    else:
+        return {
+            "logged_in": True,
+            "message": "User is already logged in - No Login text found",
+        }
+
+
 def go_back_function(count=1):
     """Reusable function to navigate back with dynamic number of back presses"""
     try:
@@ -82,25 +96,24 @@ def open_atur_uang():
             ["am", "start", "-n", "com.aturuang/.MainActivity"],
             check=True,
         )
-        time.sleep(5)
 
-        if d(text="Login").exists:
-            return jsonify(
-                {
-                    "status": "success",
-                    "logged_in": False,
-                    "message": "User is not logged in - Login text found",
-                }
-            )
-        else:
-            return jsonify(
-                {
-                    "status": "success",
-                    "logged_in": True,
-                    "message": "User is already logged in - No Login text found",
-                }
-            )
+        return jsonify(
+            {
+                "status": "success",
+                "message": "Atur Uang app opened successfully",
+            }
+        )
     except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/check_login_status", methods=["GET"])
+def check_login_status_endpoint():
+    """Check if user is logged in to Atur Uang app"""
+    try:
+        login_status = check_login_status()
+        return jsonify({"status": "success", **login_status})
+    except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
