@@ -186,24 +186,39 @@ def click_mulai_berlangganan():
 
             if d(text="Langganan").exists:
                 d(text="Langganan").click()
-                time.sleep(10)
+
+                wait_attempts = 0
+                max_wait = 30
+
+                while (
+                    not d(text="Berhasil Berlangganan").exists
+                    and wait_attempts < max_wait
+                ):
+                    time.sleep(1)
+                    wait_attempts += 1
 
                 if d(text="Berhasil Berlangganan").exists:
-                    time.sleep(1)
-                    d.press.back()
+                    time.sleep(2)
+
+                    screen_info = d.info
+                    screen_width = screen_info["displayWidth"]
+                    tap_x = screen_width // 2
+                    tap_y = 100
+
+                    d.click(tap_x, tap_y)
                     time.sleep(1)
 
                     return jsonify(
                         {
                             "status": "success",
-                            "message": "Successfully clicked 'Mulai Berlangganan' and 'Langganan' buttons",
+                            "message": "Successfully subscribed and closed success drawer - 'Berhasil Berlangganan' confirmed",
                         }
                     )
                 else:
                     return jsonify(
                         {
-                            "status": "error",
-                            "message": "Failed to subscribe - 'Berhasil Berlangganan' text not found",
+                            "status": "timeout",
+                            "message": "Timeout waiting for 'Berhasil Berlangganan' text to appear",
                         }
                     )
 
