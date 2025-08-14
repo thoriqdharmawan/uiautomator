@@ -31,16 +31,16 @@ d = Device()
 #         return jsonify({"status": "failed", "error": str(e)})
 
 
-# @app.route("/open_shopee", methods=["POST"])
-# def open_shopee():
-#     d.screen.on()
-#     d.press.home()
-#     time.sleep(1)
+@app.route("/open_shopee_v2", methods=["POST"])
+def open_shopee():
+    d.screen.on()
+    d.press.home()
+    time.sleep(1)
 
-#     d(text="Shopee").click()
-#     time.sleep(5)
+    d(text="Shopee").click()
+    time.sleep(5)
 
-#     return jsonify({"status": "Shopee app opened"})
+    return jsonify({"status": "Shopee app opened"})
 
 
 @app.route("/open_shopee", methods=["GET"])
