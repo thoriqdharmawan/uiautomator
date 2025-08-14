@@ -178,7 +178,7 @@ def click_ai_chatbot():
 
 @app.route("/click_mulai_berlangganan", methods=["POST"])
 def click_mulai_berlangganan():
-    """Clicks the 'Mulai Berlangganan' button"""
+    """Clicks the 'Mulai Berlangganan' button and then the 'Langganan' button"""
     try:
         if d(text="Mulai Berlangganan").exists:
             d(text="Mulai Berlangganan").click()
@@ -186,39 +186,14 @@ def click_mulai_berlangganan():
 
             if d(text="Langganan").exists:
                 d(text="Langganan").click()
+                time.sleep(2)
 
-                wait_attempts = 0
-                max_wait = 30
-
-                while not d(text="Berhasil").exists and wait_attempts < max_wait:
-                    time.sleep(1)
-                    wait_attempts += 1
-
-                if d(text="Berhasil").exists:
-                    time.sleep(2)
-
-                    screen_info = d.info
-                    screen_width = screen_info["displayWidth"]
-                    tap_x = screen_width // 2
-                    tap_y = 100
-
-                    d.click(tap_x, tap_y)
-                    time.sleep(1)
-
-                    return jsonify(
-                        {
-                            "status": "success",
-                            "message": "Successfully subscribed and closed success drawer - 'Berhasil Berlangganan' confirmed",
-                        }
-                    )
-                else:
-                    return jsonify(
-                        {
-                            "status": "timeout",
-                            "message": "Timeout waiting for 'Berhasil Berlangganan' text to appear",
-                        }
-                    )
-
+                return jsonify(
+                    {
+                        "status": "success",
+                        "message": "Successfully clicked 'Mulai Berlangganan' and 'Langganan' buttons",
+                    }
+                )
             else:
                 return jsonify(
                     {
@@ -243,6 +218,45 @@ def check_premium_status():
     try:
         premium_status = check_premium_membership()
         return jsonify({"status": "success", **premium_status})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/confirm_subscription", methods=["POST"])
+def confirm_subscription():
+    """Confirms subscription by waiting for 'Langganan' text to disappear"""
+    try:
+        wait_attempts = 0
+        max_wait = 30
+
+        while d(text="Langganan").exists and wait_attempts < max_wait:
+            time.sleep(1)
+            wait_attempts += 1
+
+        if not d(text="Langganan").exists:
+            time.sleep(2)
+
+            screen_info = d.info
+            screen_width = screen_info["displayWidth"]
+            tap_x = screen_width // 2
+            tap_y = 200
+
+            d.click(tap_x, tap_y)
+            time.sleep(1)
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": "Successfully subscribed and closed success drawer - 'Langganan' text disappeared",
+                }
+            )
+        else:
+            return jsonify(
+                {
+                    "status": "timeout",
+                    "message": "Timeout waiting for 'Langganan' text to disappear",
+                }
+            )
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
