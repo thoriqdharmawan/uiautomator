@@ -49,28 +49,6 @@ def go_back_function(count=1):
         }
 
 
-# @app.route("/trigger_n8n", methods=["POST"])
-# def trigger_n8n():
-#     n8n_webhook_url = "https://n8n.aturuang.xyz/webhook-test/open_shopee"
-#     payload = {"action": "open_shopee"}
-#     try:
-#         print(f"Sending request to: {n8n_webhook_url}")
-#         print(f"Payload: {payload}")
-#         r = requests.post(n8n_webhook_url, json=payload, timeout=10)
-#         print(f"Response status: {r.status_code}")
-#         print(f"Response text: {r.text}")
-#         return jsonify(
-#             {
-#                 "status": "n8n webhook hit",
-#                 "response_code": r.status_code,
-#                 "response_text": r.text,
-#                 "url": n8n_webhook_url,
-#             }
-#         )
-#     except Exception as e:
-#         return jsonify({"status": "failed", "error": str(e)})
-
-
 # @app.route("/open_shopee_v2", methods=["POST"])
 # def open_shopee_v2():
 #     d.screen.on()
