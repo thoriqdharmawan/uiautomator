@@ -190,14 +190,11 @@ def click_mulai_berlangganan():
                 wait_attempts = 0
                 max_wait = 30
 
-                while (
-                    not d(text="Berhasil Berlangganan").exists
-                    and wait_attempts < max_wait
-                ):
+                while not d(text="Berhasil").exists and wait_attempts < max_wait:
                     time.sleep(1)
                     wait_attempts += 1
 
-                if d(text="Berhasil Berlangganan").exists:
+                if d(text="Berhasil").exists:
                     time.sleep(2)
 
                     screen_info = d.info
