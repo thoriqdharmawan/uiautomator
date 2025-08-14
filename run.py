@@ -461,7 +461,7 @@ def go_back():
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok - v1"})
+    return jsonify({"status": "ok - v2"})
 
 
 if __name__ == "__main__":
