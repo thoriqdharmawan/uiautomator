@@ -78,7 +78,7 @@ def open_atur_uang():
             ["am", "start", "-n", "com.aturuang/.MainActivity"],
             check=True,
         )
-        time.sleep(5)
+        time.sleep(4)
 
         if d(text="Login").exists:
             return jsonify(
@@ -186,7 +186,7 @@ def click_mulai_berlangganan():
 
             if d(text="Langganan").exists:
                 d(text="Langganan").click()
-                time.sleep(5)
+                time.sleep(10)
 
                 if d(text="Berhasil Berlangganan").exists:
                     time.sleep(1)
