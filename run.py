@@ -82,7 +82,7 @@ def open_atur_uang():
             ["am", "start", "-n", "com.aturuang/.MainActivity"],
             check=True,
         )
-        time.sleep(1)
+        time.sleep(5)
 
         if d(text="Login").exists:
             return jsonify(
