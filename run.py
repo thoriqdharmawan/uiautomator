@@ -9,38 +9,38 @@ app = Flask(__name__)
 d = Device()
 
 
-@app.route("/trigger_n8n", methods=["POST"])
-def trigger_n8n():
-    n8n_webhook_url = "https://n8n.aturuang.xyz/webhook-test/open_shopee"
-    payload = {"action": "open_shopee"}
-    try:
-        print(f"Sending request to: {n8n_webhook_url}")
-        print(f"Payload: {payload}")
-        r = requests.post(n8n_webhook_url, json=payload, timeout=10)
-        print(f"Response status: {r.status_code}")
-        print(f"Response text: {r.text}")
-        return jsonify(
-            {
-                "status": "n8n webhook hit",
-                "response_code": r.status_code,
-                "response_text": r.text,
-                "url": n8n_webhook_url,
-            }
-        )
-    except Exception as e:
-        return jsonify({"status": "failed", "error": str(e)})
+# @app.route("/trigger_n8n", methods=["POST"])
+# def trigger_n8n():
+#     n8n_webhook_url = "https://n8n.aturuang.xyz/webhook-test/open_shopee"
+#     payload = {"action": "open_shopee"}
+#     try:
+#         print(f"Sending request to: {n8n_webhook_url}")
+#         print(f"Payload: {payload}")
+#         r = requests.post(n8n_webhook_url, json=payload, timeout=10)
+#         print(f"Response status: {r.status_code}")
+#         print(f"Response text: {r.text}")
+#         return jsonify(
+#             {
+#                 "status": "n8n webhook hit",
+#                 "response_code": r.status_code,
+#                 "response_text": r.text,
+#                 "url": n8n_webhook_url,
+#             }
+#         )
+#     except Exception as e:
+#         return jsonify({"status": "failed", "error": str(e)})
 
 
-@app.route("/open_shopee", methods=["POST"])
-def open_shopee():
-    d.screen.on()
-    d.press.home()
-    time.sleep(1)
+# @app.route("/open_shopee", methods=["POST"])
+# def open_shopee():
+#     d.screen.on()
+#     d.press.home()
+#     time.sleep(1)
 
-    d(text="Shopee").click()
-    time.sleep(5)
+#     d(text="Shopee").click()
+#     time.sleep(5)
 
-    return jsonify({"status": "Shopee app opened"})
+#     return jsonify({"status": "Shopee app opened"})
 
 
 @app.route("/open_shopee", methods=["GET"])
