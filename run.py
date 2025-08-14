@@ -176,6 +176,36 @@ def click_ai_chatbot():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@app.route("/click_mulai_berlangganan", methods=["POST"])
+def click_mulai_berlangganan():
+    """Clicks the 'Mulai Berlangganan' button"""
+    try:
+        if d(text="Mulai Berlangganan").exists:
+            d(text="Mulai Berlangganan").click()
+            time.sleep(4)
+
+            if d(text="Langganan").exists:
+                d(text="Langganan").click()
+                time.sleep(2)
+
+            else:
+                return jsonify(
+                    {
+                        "status": "not_found",
+                        "message": "'Langganan' button not found after clicking 'Mulai Berlangganan'",
+                    }
+                )
+        else:
+            return jsonify(
+                {
+                    "status": "not_found",
+                    "message": "'Mulai Berlangganan' button not found",
+                }
+            )
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 @app.route("/check_premium_status", methods=["GET"])
 def check_premium_status():
     """Check if user is a premium member"""
