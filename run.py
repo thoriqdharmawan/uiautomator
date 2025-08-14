@@ -129,9 +129,23 @@ def click_ai_chatbot():
 
         if d(text="AI Chatbot").exists:
             d(text="AI Chatbot").click()
-            return jsonify(
-                {"status": "success", "message": "AI Chatbot clicked successfully"}
-            )
+
+            if d(text="Keanggotaan Premium").exists:
+                return jsonify(
+                    {
+                        "status": "success",
+                        "is_premium_member": False,
+                        "message": "User is not a premium member - Keanggotaan Premium text found",
+                    }
+                )
+            else:
+                return jsonify(
+                    {
+                        "status": "success",
+                        "is_premium_member": True,
+                        "message": "User is a premium member - Keanggotaan Premium text not found",
+                    }
+                )
         else:
             return jsonify(
                 {
