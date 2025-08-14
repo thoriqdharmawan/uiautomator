@@ -101,7 +101,7 @@ def open_atur_uang():
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok - heypico"})
+    return jsonify({"status": "ok - v1"})
 
 
 if __name__ == "__main__":
